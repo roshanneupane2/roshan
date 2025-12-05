@@ -1,0 +1,292 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 1000
+
+/* ============================================================
+        QUEUE USING ARRAY  (VERY LONG DSA VERSION)
+   ============================================================ */
+
+struct Queue {
+    int arr[MAX];
+    int front;
+    int rear;
+    int size;
+};
+
+/* ------------------------------ */
+/*       FUNCTION PROTOTYPES      */
+/* ------------------------------ */
+
+void initQueue(struct Queue *q);
+int isFull(struct Queue *q);
+int isEmpty(struct Queue *q);
+void enqueue(struct Queue *q, int value);
+int dequeue(struct Queue *q);
+int peek(struct Queue *q);
+void display(struct Queue *q);
+int count(struct Queue *q);
+int search(struct Queue *q, int key);
+int sumOfElements(struct Queue *q);
+void reverseQueue(struct Queue *q);
+void clearQueue(struct Queue *q);
+
+/* Utility functions for reverse */
+void pushStack(int stack[], int *top, int value);
+int popStack(int stack[], int *top);
+
+
+/* ------------------------------ */
+/*     INITIALIZE QUEUE           */
+/* ------------------------------ */
+void initQueue(struct Queue *q) {
+    q->front = 0;
+    q->rear  = -1;
+    q->size  = 0;
+}
+
+/* ------------------------------ */
+/*     CHECK FULL                 */
+/* ------------------------------ */
+int isFull(struct Queue *q) {
+    return q->rear == MAX - 1;
+}
+
+/* ------------------------------ */
+/*     CHECK EMPTY                */
+/* ------------------------------ */
+int isEmpty(struct Queue *q) {
+    return q->size == 0;
+}
+
+/* ------------------------------ */
+/*     ENQUEUE ELEMENT            */
+/* ------------------------------ */
+void enqueue(struct Queue *q, int value) {
+    if (isFull(q)) {
+        printf("\n[ERROR] Queue Overflow! Cannot insert %d\n", value);
+        return;
+    }
+
+    q->rear++;
+    q->arr[q->rear] = value;
+    q->size++;
+
+    printf("\nInserted %d into queue.\n", value);
+}
+
+/* ------------------------------ */
+/*     DEQUEUE ELEMENT            */
+/* ------------------------------ */
+int dequeue(struct Queue *q) {
+    if (isEmpty(q)) {
+        printf("\n[ERROR] Queue Underflow! Nothing to delete.\n");
+        return -1;
+    }
+
+    int removed = q->arr[q->front];
+
+    q->front++;
+    q->size--;
+
+    printf("\nDeleted element: %d\n", removed);
+    return removed;
+}
+
+/* ------------------------------ */
+/*     FRONT ELEMENT              */
+/* ------------------------------ */
+int peek(struct Queue *q) {
+    if (isEmpty(q)) {
+        printf("\nQueue is Empty!\n");
+        return -1;
+    }
+
+    return q->arr[q->front];
+}
+
+/* ------------------------------ */
+/*     DISPLAY QUEUE              */
+/* ------------------------------ */
+void display(struct Queue *q) {
+    if (isEmpty(q)) {
+        printf("\nQueue is Empty!\n");
+        return;
+    }
+
+    printf("\nQueue Elements (Front → Rear):\n");
+    for (int i = q->front; i <= q->rear; i++) {
+        printf("%d ", q->arr[i]);
+    }
+    printf("\n");
+}
+
+/* ------------------------------ */
+/*     COUNT ELEMENTS             */
+/* ------------------------------ */
+int count(struct Queue *q) {
+    return q->size;
+}
+
+/* ------------------------------ */
+/*     SEARCH ELEMENT             */
+/* ------------------------------ */
+int search(struct Queue *q, int key) {
+    for (int i = q->front; i <= q->rear; i++) {
+        if (q->arr[i] == key)
+            return (i - q->front) + 1;  // position from front
+    }
+    return -1;
+}
+
+/* ------------------------------ */
+/*     SUM OF ELEMENTS            */
+/* ------------------------------ */
+int sumOfElements(struct Queue *q) {
+    int sum = 0;
+
+    for (int i = q->front; i <= q->rear; i++)
+        sum += q->arr[i];
+
+    return sum;
+}
+
+/* ------------------------------ */
+/*     STACK UTILITY FUNCTIONS    */
+/* ------------------------------ */
+
+void pushStack(int stack[], int *top, int value) {
+    (*top)++;
+    stack[*top] = value;
+}
+
+int popStack(int stack[], int *top) {
+    int x = stack[*top];
+    (*top)--;
+    return x;
+}
+
+/* ------------------------------ */
+/*        REVERSE QUEUE           */
+/* ------------------------------ */
+void reverseQueue(struct Queue *q) {
+    if (isEmpty(q)) {
+        printf("\nQueue is Empty! Cannot reverse.\n");
+        return;
+    }
+
+    int stack[MAX];
+    int top = -1;
+
+    // Push all items to stack
+    for (int i = q->front; i <= q->rear; i++) {
+        pushStack(stack, &top, q->arr[i]);
+    }
+
+    // Pop back to queue
+    int i = q->front;
+    while (top != -1) {
+        q->arr[i] = popStack(stack, &top);
+        i++;
+    }
+
+    printf("\nQueue reversed successfully!\n");
+}
+
+/* ------------------------------ */
+/*        CLEAR QUEUE             */
+/* ------------------------------ */
+void clearQueue(struct Queue *q) {
+    q->front = 0;
+    q->rear  = -1;
+    q->size  = 0;
+
+    printf("\nQueue cleared successfully!\n");
+}
+
+/* ========================================================
+                  MAIN MENU DRIVER CODE
+   ======================================================== */
+
+int main() {
+    struct Queue q;
+    initQueue(&q);
+
+    int choice, value, pos;
+
+    while (1) {
+        printf("\n=====================================================\n");
+        printf("                 QUEUE OPERATIONS MENU               \n");
+        printf("=====================================================\n");
+        printf("1. Enqueue\n");
+        printf("2. Dequeue\n");
+        printf("3. Peek\n");
+        printf("4. Display\n");
+        printf("5. Count Elements\n");
+        printf("6. Search Element\n");
+        printf("7. Sum of Elements\n");
+        printf("8. Reverse Queue\n");
+        printf("9. Clear Queue\n");
+        printf("10. Exit\n");
+        printf("=====================================================\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter value to insert: ");
+                scanf("%d", &value);
+                enqueue(&q, value);
+                break;
+
+            case 2:
+                dequeue(&q);
+                break;
+
+            case 3:
+                value = peek(&q);
+                if (value != -1)
+                    printf("\nFront element: %d\n", value);
+                break;
+
+            case 4:
+                display(&q);
+                break;
+
+            case 5:
+                printf("\nTotal elements in queue: %d\n", count(&q));
+                break;
+
+            case 6:
+                printf("Enter value to search: ");
+                scanf("%d", &value);
+                pos = search(&q, value);
+                if (pos != -1)
+                    printf("\nElement found at position: %d\n", pos);
+                else
+                    printf("\nElement NOT found!\n");
+                break;
+
+            case 7:
+                printf("\nSum of all queue elements: %d\n", sumOfElements(&q));
+                break;
+
+            case 8:
+                reverseQueue(&q);
+                break;
+
+            case 9:
+                clearQueue(&q);
+                break;
+
+            case 10:
+                printf("\nExiting Program...\n");
+                exit(0);
+
+            default:
+                printf("\nInvalid Choice! Try Again.\n");
+        }
+    }
+
+    return 0;
+}
